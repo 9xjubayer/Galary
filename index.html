@@ -3,121 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Telegram Gallery Bot</title>
+    <title>Modern Gallery Bot</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --primary-color: #0088cc;
-            --bg-color: var(--tg-theme-secondary-bg-color, #f0f2f5);
+            --primary-gradient: linear-gradient(135deg, #0088cc 0%, #00aaff 100%);
+            --bg-color: var(--tg-theme-secondary-bg-color, #f4f7f9);
             --card-bg: var(--tg-theme-bg-color, #ffffff);
-            --text-color: var(--tg-theme-text-color, #222222);
-            --hint-color: var(--tg-theme-hint-color, #707579);
+            --text-color: var(--tg-theme-text-color, #1c1c1e);
+            --hint-color: var(--tg-theme-hint-color, #8e8e93);
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             margin: 0;
-            padding: 15px;
+            padding: 20px;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* User Profile Section */
+        /* Profile Section */
         .profile-card {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 16px;
+            padding: 25px 20px;
+            border-radius: 24px;
             text-align: center;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .avatar-container {
             position: relative;
-            display: inline-block;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
 
         .user-avatar {
-            width: 85px;
-            height: 85px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid var(--primary-color);
+            padding: 4px;
+            background: var(--primary-gradient);
             display: none;
         }
 
         .avatar-placeholder {
-            width: 85px;
-            height: 85px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
-            background: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
-            font-size: 32px;
-            font-weight: bold;
+            font-size: 36px;
+            font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto;
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
         }
 
         .user-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             margin: 0;
+            letter-spacing: -0.5px;
         }
 
         .user-id {
             font-size: 13px;
             color: var(--hint-color);
-            margin-top: 4px;
+            margin-top: 5px;
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.04);
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
         }
 
         /* Gallery Grid */
         .gallery-item {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .card {
             background: var(--card-bg);
             border: none;
-            border-radius: 12px;
+            border-radius: 20px;
             overflow: hidden;
-            transition: transform 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
         }
 
         .card:active {
-            transform: scale(0.96);
+            transform: scale(0.95);
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            height: 130px;
+            overflow: hidden;
         }
 
         .card img {
             width: 100%;
-            height: 120px;
+            height: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.1);
         }
 
         .card-title {
-            padding: 10px;
-            font-size: 14px;
+            padding: 15px;
+            font-size: 15px;
             font-weight: 600;
             text-align: center;
             margin: 0;
+            background: var(--card-bg);
         }
 
-        /* Webview Overlay */
+        /* Full-screen Overlay */
         #webview-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: white;
-            z-index: 9999;
-            display: none; /* Hidden by default */
+            background: #fff;
+            z-index: 10000;
+            display: none;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
 
         #site-frame {
@@ -128,17 +162,34 @@
 
         .close-btn {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--primary-color);
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-gradient);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            z-index: 10000;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 10px 25px rgba(0, 136, 204, 0.4);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        /* Section Title */
+        .section-header {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--hint-color);
+            margin-bottom: 15px;
+            margin-left: 5px;
+            letter-spacing: 1px;
+        }
+
     </style>
 </head>
 <body>
@@ -153,46 +204,65 @@
             <div class="user-id">ID: <span id="user-telegram-id">00000000</span></div>
         </div>
 
+        <h6 class="section-header">Featured Apps</h6>
+
         <div class="container-fluid p-0">
             <div class="row gx-3">
+                
                 <div class="col-6 gallery-item">
-                    <div class="card" onclick="openInternalLink('https://bing.com')">
-                        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400" alt="Bing">
+                    <div class="card" onclick="openInternalLink('https://bing.com', 'Bing Search')">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400" alt="Bing">
+                        </div>
                         <p class="card-title">Bing Search</p>
                     </div>
                 </div>
+
                 <div class="col-6 gallery-item">
-                    <div class="card" onclick="openInternalLink('https://wikipedia.org')">
-                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400" alt="Wikipedia">
+                    <div class="card" onclick="openInternalLink('https://wikipedia.org', 'Wikipedia')">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400" alt="Wikipedia">
+                        </div>
                         <p class="card-title">Wikipedia</p>
                     </div>
                 </div>
+
                 <div class="col-6 gallery-item">
-                    <div class="card" onclick="openInternalLink('https://fast.com')">
-                        <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400" alt="Fast">
-                        <p class="card-title">Speed Test</p>
+                    <div class="card" onclick="openInternalLink('https://fast.com', 'Speed Test')">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400" alt="Fast">
+                        </div>
+                        <p class="card-title">Fast.com</p>
                     </div>
                 </div>
+
                 <div class="col-6 gallery-item">
-                    <div class="card" onclick="openInternalLink('https://telegram.org')">
-                        <img src="https://images.unsplash.com/photo-1614680376593-902f74cc0d41?w=400" alt="Telegram">
-                        <p class="card-title">Telegram</p>
+                    <div class="card" onclick="openInternalLink('https://telegram.org', 'Telegram')">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1614680376593-902f74cc0d41?w=400" alt="Telegram">
+                        </div>
+                        <p class="card-title">Telegram Info</p>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 
     <div id="webview-overlay">
         <iframe id="site-frame" src=""></iframe>
-        <button class="close-btn" onclick="closeInternalLink()">Back to Gallery</button>
+        <button class="close-btn" onclick="closeInternalLink()">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            Back to Home
+        </button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.enableClosingConfirmation(); // ভুল করে বন্ধ হওয়া রোধ করবে
 
-        // 1. Setup User Data
+        // 1. User Data Initialization
         const user = tg.initDataUnsafe?.user;
         if (user) {
             document.getElementById('user-full-name').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
@@ -210,38 +280,34 @@
             }
         }
 
-        // 2. Open Internal Webview Function
-        function openInternalLink(url) {
+        // 2. Open Webview Function
+        function openInternalLink(url, title) {
             const overlay = document.getElementById('webview-overlay');
             const frame = document.getElementById('site-frame');
-            const mainContent = document.getElementById('main-content');
+            
+            // Haptic Feedback (ফোনে হালকা ভাইব্রেশন হবে)
+            tg.HapticFeedback.impactOccurred('medium');
 
             frame.src = url;
             overlay.style.display = 'block';
-            mainContent.style.display = 'none';
-
-            // Show Telegram Back Button
+            
+            // Telegram Back Button
             tg.BackButton.show();
             tg.BackButton.onClick(() => {
                 closeInternalLink();
             });
         }
 
-        // 3. Close Internal Webview Function
+        // 3. Close Webview Function
         function closeInternalLink() {
             const overlay = document.getElementById('webview-overlay');
             const frame = document.getElementById('site-frame');
-            const mainContent = document.getElementById('main-content');
 
-            frame.src = ""; // Clear iframe to stop loading
+            frame.src = "";
             overlay.style.display = 'none';
-            mainContent.style.display = 'block';
-
-            // Hide Telegram Back Button
             tg.BackButton.hide();
         }
 
-        // Initial settings
         tg.ready();
     </script>
 </body>
