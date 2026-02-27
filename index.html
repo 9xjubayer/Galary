@@ -204,6 +204,184 @@
         <div class="row gx-3">
             
             <div class="col-6">
+                <div class="gallery-card" onclick="https://ghost-tcp-control-1-rqq4.onrender.com')">
+                    <div class="card-img-box">
+                        <img src="https://icy-gold-ypgtxym1rg.edgeone.app/1772213612136.png" alt="Bing">
+                    </div>
+                    <div class="card-info"><h3>TCP V1</h3></div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="gallery-card" onclick="openApp('https://wikipedia.org')">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400" alt="Wiki">
+                    </div>
+                    <div class="card-info"><h3>Wikipedia</h3></div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="gallery-card" onclick="openApp('https://fast.com')">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400" alt="Speed">
+                    </div>
+                    <div class="card-info"><h3>Speed Test</h3></div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="gallery-card" onclick="openApp('https://telegram.org')">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400" alt="TG">
+                    </div>
+                    <div class="card-info"><h3>Telegram</h3></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="webview-overlay">
+        <iframe id="app-frame" src="" style="width:100%; height:100%; border:none;"></iframe>
+        <button class="floating-back" onclick="closeApp()">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            BACK TO HOME
+        </button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // ইউজার ডাটা লোড
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.getElementById('user-name').innerText = user.first_name;
+            document.getElementById('user-id').innerText = 'ID: ' + user.id;
+            document.getElementById('user-avatar').innerText = user.first_name.charAt(0).toUpperCase();
+        }
+
+        // অ্যাপ ওপেন ফাংশন
+        function openApp(url) {
+            tg.HapticFeedback.impactOccurred('medium');
+            document.getElementById('app-frame').src = url;
+            document.getElementById('webview-overlay').style.display = 'block';
+            
+            // টেলিগ্রামের অফিসিয়াল ব্যাক বাটন অ্যাক্টিভেট করা
+            tg.BackButton.show();
+            tg.BackButton.onClick(() => closeApp());
+        }
+
+        // অ্যাপ ক্লোজ ফাংশন
+        function closeApp() {
+            document.getElementById('webview-overlay').style.display = 'none';
+            document.getElementById('app-frame').src = "";
+            tg.BackButton.hide();
+        }
+
+        tg.ready();
+    </script>
+</body>
+</html>        /* --- Grid & Cards --- */
+        .gallery-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 20px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .gallery-card:active {
+            transform: scale(0.92);
+        }
+
+        .card-img-box {
+            height: 140px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .gallery-card:hover .card-img-box img {
+            transform: scale(1.15);
+        }
+
+        .card-info {
+            padding: 15px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .card-info h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0;
+            color: #f8fafc;
+        }
+
+        /* --- Webview Overlay --- */
+        #webview-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--main-bg);
+            z-index: 10000;
+            display: none;
+            animation: slideIn 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .floating-back {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(14, 165, 233, 0.9);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.4);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="profile-container">
+        <div id="user-avatar" class="avatar-circle">?</div>
+        <h2 class="user-name" id="user-name">Welcome Guest</h2>
+        <div class="user-meta" id="user-id">UID: 000000000</div>
+    </div>
+
+    <div class="section-header">
+        <div class="header-dot"></div>
+        <div class="header-title">Smart Directory</div>
+    </div>
+
+    <div class="container-fluid p-0">
+        <div class="row gx-3">
+            
+            <div class="col-6">
                 <div class="gallery-card" onclick="openApp('https://bing.com')">
                     <div class="card-img-box">
                         <img src="https://images.unsplash.com/photo-1614680376593-902f74cc0d41?w=400" alt="Bing">
