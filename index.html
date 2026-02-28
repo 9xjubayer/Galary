@@ -1,110 +1,181 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Gallery</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>My Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        /* CSS Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background-color: #0b0e14;
-            color: #ffffff;
-            padding: 20px;
-            overflow-x: hidden;
+            background-color: #f0f2f5;
+            color: #222;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 16px;
         }
 
         /* Profile Section */
-        .profile-header {
-            background: linear-gradient(145deg, #1a1f2b, #11151f);
-            border-radius: 25px;
-            padding: 25px;
-            text-align: center;
+        .user-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
             margin-bottom: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        .avatar {
-            width: 80px;
-            height: 80px;
+        .user-img {
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            background: #0ea5e9;
-            margin: 0 auto 15px;
+            background: #0088cc;
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
+            font-size: 24px;
             font-weight: bold;
-            border: 3px solid rgba(14, 165, 233, 0.3);
             overflow: hidden;
         }
 
-        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-img img { width: 100%; height: 100%; object-fit: cover; }
 
-        .u-name { font-size: 18px; font-weight: 600; margin-bottom: 5px; }
-        .u-id { font-size: 12px; color: #64748b; letter-spacing: 1px; }
+        .user-info h2 { font-size: 18px; margin-bottom: 2px; color: #1c1c1c; }
+        .user-info p { font-size: 13px; color: #707579; }
 
-        /* Directory Grid */
-        .grid-container {
+        /* Grid Layout */
+        .app-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
 
-        .card {
-            background: #161b26;
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .card:active { transform: scale(0.95); }
-
-        .card-img {
-            height: 100px;
-            background: #1e293b;
-            position: relative;
-        }
-
-        .card-img img { width: 100%; height: 100%; object-fit: cover; }
-
-        .card-title {
-            padding: 12px;
+        .app-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 15px;
             text-align: center;
-            font-size: 13px;
-            font-weight: 600;
-            background: rgba(255,255,255,0.02);
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #eef0f2;
+            transition: transform 0.1s;
         }
 
-        /* Fullscreen Webview */
-        #browser {
+        .app-card:active { transform: scale(0.96); background: #f9f9f9; }
+
+        .app-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
+            border-radius: 12px;
+            display: block;
+            object-fit: cover;
+        }
+
+        .app-name { font-size: 14px; font-weight: 600; color: #333; }
+
+        /* Fullscreen View */
+        #app-view {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: #000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
             z-index: 9999;
             display: none;
         }
 
-        .close-btn {
+        iframe { width: 100%; height: 100%; border: none; }
+
+        .back-btn {
             position: fixed;
-            bottom: 30px;
-            left: 50%;
+            bottom: 20px; left: 50%;
             transform: translateX(-50%);
-            background: #0ea5e9;
+            background: #0088cc;
             color: white;
-            padding: 12px 30px;
-            border-radius: 50px;
+            padding: 12px 25px;
+            border-radius: 30px;
             border: none;
             font-weight: bold;
-            box-shadow: 0 5px 20px rgba(14, 165, 233, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
         }
     </style>
+</head>
+<body>
+
+    <div class="user-box">
+        <div class="user-img" id="user-avatar">?</div>
+        <div class="user-info">
+            <h2 id="user-name">Guest User</h2>
+            <p id="user-id">ID: 00000000</p>
+        </div>
+    </div>
+
+    <div class="app-grid">
+        
+        <div class="app-card" onclick="runApp('https://ghost-tcp-control-1-rqq4.onrender.com')">
+            <img src="https://cdn-icons-png.flaticon.com/512/644/644667.png" class="app-icon">
+            <div class="app-name">TCP V1</div>
+        </div>
+
+        <div class="app-card" onclick="runApp('https://wikipedia.org')">
+            <img src="https://cdn-icons-png.flaticon.com/512/38/38401.png" class="app-icon">
+            <div class="app-name">Wikipedia</div>
+        </div>
+
+        <div class="app-card" onclick="runApp('https://fast.com')">
+            <img src="https://cdn-icons-png.flaticon.com/512/564/564429.png" class="app-icon">
+            <div class="app-name">Speed Test</div>
+        </div>
+
+        <div class="app-card" onclick="runApp('https://telegram.org')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" class="app-icon">
+            <div class="app-name">Telegram</div>
+        </div>
+
+    </div>
+
+    <div id="app-view">
+        <iframe id="frame" src=""></iframe>
+        <button class="back-btn" onclick="exitApp()">Back to Menu</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Load User Data
+        const userData = tg.initDataUnsafe?.user;
+        if (userData) {
+            document.getElementById('user-name').innerText = userData.first_name;
+            document.getElementById('user-id').innerText = "ID: " + userData.id;
+            if (userData.photo_url) {
+                document.getElementById('user-avatar').innerHTML = `<img src="${userData.photo_url}">`;
+            } else {
+                document.getElementById('user-avatar').innerText = userData.first_name[0];
+            }
+        }
+
+        function runApp(url) {
+            tg.HapticFeedback.impactOccurred('medium');
+            document.getElementById('frame').src = url;
+            document.getElementById('app-view').style.display = 'block';
+            tg.BackButton.show();
+        }
+
+        function exitApp() {
+            document.getElementById('app-view').style.display = 'none';
+            document.getElementById('frame').src = "";
+            tg.BackButton.hide();
+        }
+
+        tg.BackButton.onClick(exitApp);
+    </script>
+</body>
+</html>
 </head>
 <body>
 
