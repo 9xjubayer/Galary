@@ -6,7 +6,7 @@
     <title>Smart Directory App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* CSS resets - অতিরিক্ত সব টেক্সট মোছার জন্য */
+        /* CSS resets */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         body { background-color: #0f172a; color: #f8fafc; padding: 15px; overflow-x: hidden; }
@@ -41,13 +41,28 @@
 
         .app-item {
             background: #1e293b; border: 1px solid #334155;
-            border-radius: 16px; padding: 15px; text-align: center;
+            border-radius: 16px; padding: 20px 15px; text-align: center;
             transition: 0.2s; cursor: pointer;
         }
         .app-item:active { transform: scale(0.95); background: #334155; }
 
-        .app-item img { width: 45px; height: 45px; border-radius: 10px; margin-bottom: 8px; }
+        /* ছবির সাইজ বড় করা হয়েছে (৬০ পিক্সেল) */
+        .app-item img { width: 60px; height: 60px; border-radius: 12px; margin-bottom: 10px; object-fit: contain; }
         .app-item h3 { font-size: 14px; font-weight: 600; color: #f1f5f9; }
+
+        /* লোডিং ওভারলে */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.9); z-index: 10000;
+            display: none; align-items: center; justify-content: center;
+            flex-direction: column;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #334155;
+            border-top: 4px solid #38bdf8; border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* ফুল স্ক্রিন ভিউ */
         #view-panel {
@@ -61,10 +76,16 @@
             background: #38bdf8; color: #fff; padding: 12px 30px;
             border-radius: 50px; font-weight: bold; border: none;
             box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4);
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <p>অপেক্ষা করুন...</p>
+    </div>
 
     <div class="header-card">
         <div class="user-pic" id="p-img">?</div>
@@ -114,12 +135,21 @@
             }
         }
 
-        // ফাংশনসমূহ
+        // ৩ সেকেন্ড লোডিং ফাংশন
         function openLink(url) {
             webapp.HapticFeedback.impactOccurred('medium');
-            document.getElementById('app-iframe').src = url;
-            document.getElementById('view-panel').style.display = 'block';
-            webapp.BackButton.show();
+            
+            // লোডার দেখানো
+            const loader = document.getElementById('loader');
+            loader.style.display = 'flex';
+
+            // ৩ সেকেন্ড (৩০০০ মিলি-সেকেন্ড) পর লিংকে প্রবেশ
+            setTimeout(() => {
+                loader.style.display = 'none';
+                document.getElementById('app-iframe').src = url;
+                document.getElementById('view-panel').style.display = 'block';
+                webapp.BackButton.show();
+            }, 3000);
         }
 
         function closeLink() {
