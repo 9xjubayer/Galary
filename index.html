@@ -13,7 +13,6 @@
             --secondary-accent: #8b5cf6;
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
-            --text-glow: 0 0 10px rgba(14, 165, 233, 0.5);
             --card-gradient: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
         }
 
@@ -23,10 +22,8 @@
             font-family: 'Inter', -apple-system, sans-serif;
             margin: 0;
             padding: 20px;
-            overflow-x: hidden;
         }
 
-        /* --- Profile Header --- */
         .profile-container {
             background: var(--card-gradient);
             backdrop-filter: blur(15px);
@@ -35,20 +32,6 @@
             border-radius: 30px;
             text-align: center;
             margin-bottom: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .profile-container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%);
-            z-index: -1;
         }
 
         .avatar-circle {
@@ -62,49 +45,143 @@
             margin: 0 auto 15px;
             font-size: 32px;
             font-weight: 800;
-            box-shadow: 0 0 25px rgba(14, 165, 233, 0.4);
+            overflow: hidden; /* যাতে ছবি গোল থাকে */
             border: 3px solid rgba(255,255,255,0.1);
         }
 
-        .user-name {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin: 0;
+        .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .user-meta {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-top: 5px;
-            font-family: 'Monaco', monospace;
-        }
-
-        /* --- Section Header --- */
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .gallery-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: 0.3s;
             margin-bottom: 20px;
-            padding-left: 5px;
+            cursor: pointer;
         }
 
-        .header-dot {
-            width: 8px;
-            height: 8px;
+        .gallery-card:active { transform: scale(0.95); }
+
+        .card-img-box { height: 120px; overflow: hidden; background: #1e293b; }
+        .card-img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .card-info { padding: 12px; text-align: center; background: rgba(15, 23, 42, 0.8); }
+        .card-info h3 { font-size: 14px; margin: 0; font-weight: 600; }
+
+        #webview-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--main-bg);
+            z-index: 10000;
+            display: none;
+        }
+
+        .floating-back {
+            position: fixed;
+            bottom: 30px; left: 50%;
+            transform: translateX(-50%);
             background: var(--accent-color);
-            border-radius: 50%;
-            box-shadow: var(--text-glow);
+            color: white; border: none;
+            padding: 12px 24px; border-radius: 50px;
+            font-weight: bold; z-index: 10001;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="profile-container">
+        <div id="user-avatar" class="avatar-circle">?</div>
+        <h2 class="user-name" id="user-name">Guest User</h2>
+        <div class="user-meta" id="user-id">ID: 000000000</div>
+    </div>
+
+    <div class="container-fluid p-0">
+        <div class="row gx-3">
+            
+            <div class="col-6">
+                <div class="gallery-card" onclick="openApp('https://ghost-tcp-control-1-rqq4.onrender.com')">
+                    <div class="card-img-box">
+                        <img src="https://icy-gold-ypgtxym1rg.edgeone.app/1772213612136.png" onerror="this.src='https://via.placeholder.com/150/0ea5e9/ffffff?text=TCP+V1'">
+                    </div>
+                    <div class="card-info"><h3>TCP V1</h3></div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="gallery-card" onclick="openApp('https://wikipedia.org')">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400">
+                    </div>
+                    <div class="card-info"><h3>Wikipedia</h3></div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="gallery-card" onclick="openApp('https://fast.com')">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400">
+                    </div>
+                    <div class="card-info"><h3>Speed Test</h3></div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="gallery-card" onclick="openApp('https://telegram.org')">
+                    <div class="card-img-box">
+                        <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400">
+                    </div>
+                    <div class="card-info"><h3>Telegram</h3></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="webview-overlay">
+        <iframe id="app-frame" src="" style="width:100%; height:100%; border:none;"></iframe>
+        <button class="floating-back" onclick="closeApp()">BACK TO HOME</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // ইউজার ডাটা লোড (Fix)
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.getElementById('user-name').innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+            document.getElementById('user-id').innerText = 'ID: ' + user.id;
+            
+            const avatarBox = document.getElementById('user-avatar');
+            if (user.photo_url) {
+                avatarBox.innerHTML = `<img src="${user.photo_url}" alt="user">`;
+            } else {
+                avatarBox.innerText = user.first_name.charAt(0).toUpperCase();
+            }
         }
 
-        .header-title {
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #cbd5e1;
+        function openApp(url) {
+            tg.HapticFeedback.impactOccurred('medium');
+            document.getElementById('app-frame').src = url;
+            document.getElementById('webview-overlay').style.display = 'block';
+            tg.BackButton.show();
+            tg.BackButton.onClick(() => closeApp());
         }
 
+        function closeApp() {
+            document.getElementById('webview-overlay').style.display = 'none';
+            document.getElementById('app-frame').src = "";
+            tg.BackButton.hide();
+        }
+    </script>
+</body>
+</html>
         /* --- Grid & Cards --- */
         .gallery-card {
             background: var(--glass);
