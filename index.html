@@ -1,1 +1,135 @@
 
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Directory App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* CSS resets - অতিরিক্ত সব টেক্সট মোছার জন্য */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        body { background-color: #0f172a; color: #f8fafc; padding: 15px; overflow-x: hidden; }
+
+        /* ইউজার প্রোফাইল কার্ড */
+        .header-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .user-pic {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: #38bdf8; margin: 0 auto 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: bold; overflow: hidden;
+            border: 2px solid #38bdf8;
+        }
+        .user-pic img { width: 100%; height: 100%; object-fit: cover; }
+
+        .name-txt { font-size: 18px; font-weight: 700; color: #f1f5f9; }
+        .id-txt { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+        /* ডিরেক্টরি গ্রিড */
+        .directory-label { font-size: 12px; text-transform: uppercase; color: #38bdf8; letter-spacing: 1.5px; margin-bottom: 15px; font-weight: bold; }
+        
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+        .app-item {
+            background: #1e293b; border: 1px solid #334155;
+            border-radius: 16px; padding: 15px; text-align: center;
+            transition: 0.2s; cursor: pointer;
+        }
+        .app-item:active { transform: scale(0.95); background: #334155; }
+
+        .app-item img { width: 45px; height: 45px; border-radius: 10px; margin-bottom: 8px; }
+        .app-item h3 { font-size: 14px; font-weight: 600; color: #f1f5f9; }
+
+        /* ফুল স্ক্রিন ভিউ */
+        #view-panel {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: none;
+        }
+        iframe { width: 100%; height: 100%; border: none; }
+        
+        .close-overlay {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            background: #38bdf8; color: #fff; padding: 12px 30px;
+            border-radius: 50px; font-weight: bold; border: none;
+            box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-card">
+        <div class="user-pic" id="p-img">?</div>
+        <div class="name-txt" id="p-name">লোডিং...</div>
+        <div class="id-txt" id="p-id">ID: 00000000</div>
+    </div>
+
+    <div class="directory-label">Smart Directory</div>
+
+    <div class="grid">
+        <div class="app-item" onclick="openLink('https://ghost-tcp-control-1-rqq4.onrender.com')">
+            <img src="https://cdn-icons-png.flaticon.com/512/644/644667.png">
+            <h3>TCP V1</h3>
+        </div>
+        <div class="app-item" onclick="openLink('https://wikipedia.org')">
+            <img src="https://cdn-icons-png.flaticon.com/512/38/38401.png">
+            <h3>Wikipedia</h3>
+        </div>
+        <div class="app-item" onclick="openLink('https://fast.com')">
+            <img src="https://cdn-icons-png.flaticon.com/512/564/564429.png">
+            <h3>Speed Test</h3>
+        </div>
+        <div class="app-item" onclick="openLink('https://telegram.org')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png">
+            <h3>Telegram</h3>
+        </div>
+    </div>
+
+    <div id="view-panel">
+        <iframe id="app-iframe" src=""></iframe>
+        <button class="close-overlay" onclick="closeLink()">BACK TO HOME</button>
+    </div>
+
+    <script>
+        const webapp = window.Telegram.WebApp;
+        webapp.expand();
+
+        // ইউজার ডাটা সেট করা
+        const user = webapp.initDataUnsafe?.user;
+        if(user) {
+            document.getElementById('p-name').innerText = user.first_name;
+            document.getElementById('p-id').innerText = "ID: " + user.id;
+            if(user.photo_url) {
+                document.getElementById('p-img').innerHTML = `<img src="${user.photo_url}">`;
+            } else {
+                document.getElementById('p-img').innerText = user.first_name[0].toUpperCase();
+            }
+        }
+
+        // ফাংশনসমূহ
+        function openLink(url) {
+            webapp.HapticFeedback.impactOccurred('medium');
+            document.getElementById('app-iframe').src = url;
+            document.getElementById('view-panel').style.display = 'block';
+            webapp.BackButton.show();
+        }
+
+        function closeLink() {
+            document.getElementById('view-panel').style.display = 'none';
+            document.getElementById('app-iframe').src = "";
+            webapp.BackButton.hide();
+        }
+
+        webapp.BackButton.onClick(closeLink);
+    </script>
+</body>
+</html>
